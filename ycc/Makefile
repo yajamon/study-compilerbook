@@ -1,7 +1,7 @@
-c: bin
-	gcc -o bin/ycc ycc.c
+ycc: ycc.c
 
-bin:
-	mkdir bin
+test: ycc
+	./test.sh
 
-.FHONY: c
+clean:
+	rm -f ycc *.o *~ tmp*
