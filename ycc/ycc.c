@@ -7,6 +7,13 @@ enum {
     TK_EOF,         // 入力の終わりを表すトークン
 };
 
+// トークンの型
+typedef struct {
+    int type_code;  // トークンの型を表す値
+    int value;      // type_codeがTK_NUMの場合、その数値
+    char *input;    // トークン文字列 (エラーメッセージ)
+} Token;
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
