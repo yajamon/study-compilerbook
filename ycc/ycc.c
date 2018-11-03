@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// トークンの型を表す値
+enum {
+    TK_NUM = 256,   // 整数トークン
+    TK_EOF,         // 入力の終わりを表すトークン
+};
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
