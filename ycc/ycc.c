@@ -82,21 +82,31 @@ int main(int argc, char **argv) {
     }
     printf("	mov rax, %d\n", tokens[0].value);
 
-    while (*p) {
-        if (*p == '+') {
-            p++;
-            printf("	add rax, %ld\n", strtol(p, &p, 10));
+    // `+ <数>`, `- <数>`というトークンの並びを消費してアセンブリ出力
+    int i = 1;
+    while (tokens[i].type_code != TK_EOF) {
+        if (tokens[i].type_code == '+') {
+            i++;
+            if (tokens[i].type_code != TK_NUM) {
+                fprintf(stderr, "Add \n");
+                token_error(i);
+            }
+            printf("	add rax, %d\n", tokens[i].value);
+            i++;
             continue;
         }
 
-        if (*p == '-') {
-            p++;
-            printf("	sub rax, %ld\n", strtol(p, &p, 10));
+        if (tokens[i].type_code == '-') {
+            i++;
+            if (tokens[i].type_code != TK_NUM) {
+                token_error(i);
+            }
+            printf("	sub rax, %d\n", tokens[i].value);
+            i++;
             continue;
         }
 
-        fprintf(stderr, "予期しない文字を検出しました: '%c'\n", *p);
-        return 1;
+        token_error(i);
     }
 
     printf("	ret\n");
