@@ -22,8 +22,11 @@ Token tokens[100];
 
 // pが指している文字列をトークンに分割してtokensに保存する
 void tokenize(char *p) {
+    int i = 0;
     while (*p) {
-        int i = 0;
+        // トークン可の検証用処理
+        // fprintf(stderr, "target: %s\n", p);
+
         // 空白文字をスキップ
         if (isspace(*p)) {
             p++;
