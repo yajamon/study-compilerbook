@@ -63,6 +63,18 @@ void token_error(int i) {
     exit(1);
 }
 
+// ノードの型を表す値
+enum {
+    ND_NUM = 256,
+};
+// ノードの型
+typedef struct {
+    int type_code;      // 整数かND_NUM
+    struct Node *lhs;   // 左辺
+    struct Node *rhs;   // 右辺
+    int val;            // type_codeがND_NUMの場合にのみ使う
+} Node;
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
