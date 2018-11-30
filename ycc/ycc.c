@@ -3,6 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+// エラー報告関数
+void error(char* format, char* param) {
+    if (param != NULL) {
+        fprintf(stderr, format, param);
+    } else {
+        fprintf(stderr, format);
+    }
+    exit(1);
+}
+
 // トークンの型を表す値
 enum {
     TK_NUM = 256,   // 整数トークン
@@ -49,8 +59,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        fprintf(stderr, "トークナイズできません: %s\n", p);
-        exit(1);
+        error("トークナイズできません: %s\n", p);
     }
 
     tokens[i].type_code = TK_EOF;
@@ -59,8 +68,7 @@ void tokenize(char *p) {
 
 // エラー報告関数
 void token_error(int i) {
-    fprintf(stderr, "予期しないトークンを検出しました: '%s'\n", tokens[i].input);
-    exit(1);
+    error("予期しないトークンを検出しました: '%s'\n", tokens[i].input);
 }
 
 // ノードの型を表す値
