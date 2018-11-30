@@ -77,7 +77,7 @@ enum {
     ND_NUM = 256,
 };
 // ノードの型
-typedef struct {
+typedef struct Node {
     int type_code;      // 整数かND_NUM
     struct Node *lhs;   // 左辺
     struct Node *rhs;   // 右辺
