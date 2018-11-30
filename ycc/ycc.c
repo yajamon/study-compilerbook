@@ -75,6 +75,21 @@ typedef struct {
     int val;            // type_codeがND_NUMの場合にのみ使う
 } Node;
 
+Node* new_node(int type_code, Node *lhs, Node *rhs) {
+    Node *node = malloc(sizeof(Node));
+    node->type_code = type_code;
+    node->lhs = lhs;
+    node->rhs = rhs;
+    return node;
+}
+
+Node* new_node_num(int val) {
+    Node *node = malloc(sizeof(Node));
+    node->type_code = ND_NUM;
+    node->val = val;
+    return node;
+}
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
