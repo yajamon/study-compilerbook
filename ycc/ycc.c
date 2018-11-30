@@ -43,7 +43,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-' || *p == '*' || *p == '(' || *p == ')') {
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
             tokens[i].type_code = *p;
             tokens[i].input = p;
             i++;
@@ -128,10 +128,13 @@ Node* mul() {
         pos++;
         return new_node('*', lhs, mul());
     }
+    if (tokens[pos].type_code == '/') {
+        pos++;
+        return new_node('/', lhs, mul());
+    }
     return lhs;
 }
 // bnf
-
 //  term    : number | '(' expr ')'
 Node* term() {
     if (tokens[pos].type_code == TK_NUM) {
@@ -171,6 +174,10 @@ void gen(Node *node) {
             break;
         case '*':
             printf("	mul rdi\n");
+            break;
+        case '/':
+            printf("	mov rdx, 0\n");
+            printf("	div rdi\n");
             break;
     }
     printf("	push rax\n");
