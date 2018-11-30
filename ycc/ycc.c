@@ -63,6 +63,7 @@ void token_error(int i) {
     exit(1);
 }
 
+// 抽象構文木
 // ノードの型を表す値
 enum {
     ND_NUM = 256,
@@ -88,6 +89,23 @@ Node* new_node_num(int val) {
     node->type_code = ND_NUM;
     node->val = val;
     return node;
+}
+// Parser
+int pos = 0; // Tokenの位置指定に使用
+// bnf
+//  expr    : mul expr'
+//  expr'   : ε | '+' expr | '-' expr
+Node* expr() {
+    Node *lhs = mul();
+    if (tokens[pos].type_code == '+') {
+        pos++;
+        return new_node('+', lhs, expr());
+    }
+    if (tokens[pos].type_code == '-') {
+        pos++;
+        return new_node('-', lhs, expr());
+    }
+    return lhs;
 }
 
 int main(int argc, char **argv) {
