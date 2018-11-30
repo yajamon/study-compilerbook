@@ -43,7 +43,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-') {
+        if (*p == '+' || *p == '-' || *p == '*') {
             tokens[i].type_code = *p;
             tokens[i].input = p;
             i++;
@@ -102,12 +102,13 @@ Node* new_node_num(int value) {
 int pos = 0; // Tokenの位置指定に使用
 // プロトタイプ宣言
 Node* expr();
+Node* mul();
 Node* term();
 // bnf
 //  expr    : mul expr'
 //  expr'   : ε | '+' expr | '-' expr
 Node* expr() {
-    Node *lhs = term();
+    Node *lhs = mul();
     if (tokens[pos].type_code == '+') {
         pos++;
         return new_node('+', lhs, expr());
@@ -119,6 +120,18 @@ Node* expr() {
     return lhs;
 }
 // bnf
+//  mul : term mul'
+//  mul': ε | '*' term | '/' term
+Node* mul() {
+    Node *lhs = term();
+    if (tokens[pos].type_code == '*') {
+        pos++;
+        return new_node('*', lhs, mul());
+    }
+    return lhs;
+}
+// bnf
+
 //  term    : number | '(' expr ')'
 Node* term() {
     if (tokens[pos].type_code == TK_NUM) {
@@ -146,6 +159,9 @@ void gen(Node *node) {
             break;
         case '-':
             printf("	sub rax, rdi\n");
+            break;
+        case '*':
+            printf("	mul rdi\n");
             break;
     }
     printf("	push rax\n");
