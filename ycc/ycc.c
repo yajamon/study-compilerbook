@@ -95,6 +95,7 @@ int pos = 0; // Tokenの位置指定に使用
 // プロトタイプ宣言
 Node* expr();
 Node* mul();
+Node* term();
 // bnf
 //  expr    : mul expr'
 //  expr'   : ε | '+' expr | '-' expr
@@ -124,6 +125,25 @@ Node* mul() {
         return new_node('/', lhs, mul());
     }
     return lhs;
+}
+// bnf
+//  term    : number | '(' expr ')'
+Node* term() {
+    if (tokens[pos].type_code == TK_NUM) {
+        Node *num = new_node_num(tokens[pos].value);
+        pos++;
+        return num;
+    }
+    if (tokens[pos].type_code == '(') {
+        pos++;
+        Node *node = expr();
+        if (tokens[pos].type_code != ')') {
+            error("開きカッコに対応する閉じカッコがありません: %s\n", tokens[pos].input);
+        }
+        pos++;
+        return node;
+    }
+    error("数字でも開きカッコでもないトークンです: %s\n", tokens[pos].input);
 }
 
 int main(int argc, char **argv) {
