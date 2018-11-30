@@ -92,6 +92,9 @@ Node* new_node_num(int val) {
 }
 // Parser
 int pos = 0; // Tokenの位置指定に使用
+// プロトタイプ宣言
+Node* expr();
+Node* mul();
 // bnf
 //  expr    : mul expr'
 //  expr'   : ε | '+' expr | '-' expr
@@ -104,6 +107,21 @@ Node* expr() {
     if (tokens[pos].type_code == '-') {
         pos++;
         return new_node('-', lhs, expr());
+    }
+    return lhs;
+}
+// bnf
+//  mul : term mul'
+//  mul': ε | '*' term | '/' term
+Node* mul() {
+    Node *lhs = term();
+    if (tokens[pos].type_code == '*') {
+        pos++;
+        return new_node('*', lhs, mul());
+    }
+    if (tokens[pos].type_code == '/') {
+        pos++;
+        return new_node('/', lhs, mul());
     }
     return lhs;
 }
