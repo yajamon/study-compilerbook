@@ -71,6 +71,7 @@ void token_error(int i) {
     error("予期しないトークンを検出しました: '%s'\n", tokens[i].input);
 }
 
+// 抽象構文木
 // ノードの型を表す値
 enum {
     ND_NUM = 256,
@@ -97,6 +98,37 @@ Node* new_node_num(int value) {
     node->value = value;
     return node;
 }
+// Parser
+int pos = 0; // Tokenの位置指定に使用
+// プロトタイプ宣言
+Node* expr();
+Node* term();
+// bnf
+//  expr    : mul expr'
+//  expr'   : ε | '+' expr | '-' expr
+Node* expr() {
+    Node *lhs = term();
+    if (tokens[pos].type_code == '+') {
+        pos++;
+        return new_node('+', lhs, expr());
+    }
+    if (tokens[pos].type_code == '-') {
+        pos++;
+        return new_node('-', lhs, expr());
+    }
+    return lhs;
+}
+// bnf
+//  term    : number | '(' expr ')'
+Node* term() {
+    if (tokens[pos].type_code == TK_NUM) {
+        Node *num = new_node_num(tokens[pos].value);
+        pos++;
+        return num;
+    }
+    error("数字ではないトークンです: %s\n", tokens[pos].input);
+}
+
 
 int main(int argc, char **argv) {
     if (argc != 2) {
