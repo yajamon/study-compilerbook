@@ -3,6 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+// エラー報告関数
+void error(char* format, char* param) {
+    if (param != NULL) {
+        fprintf(stderr, format, param);
+    } else {
+        fprintf(stderr, format);
+    }
+    exit(1);
+}
+
 // トークンの型を表す値
 enum {
     TK_NUM = 256,   // 整数トークン
@@ -33,7 +43,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-') {
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
             tokens[i].type_code = *p;
             tokens[i].input = p;
             i++;
@@ -49,8 +59,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        fprintf(stderr, "トークナイズできません: %s\n", p);
-        exit(1);
+        error("トークナイズできません: %s\n", p);
     }
 
     tokens[i].type_code = TK_EOF;
@@ -59,8 +68,119 @@ void tokenize(char *p) {
 
 // エラー報告関数
 void token_error(int i) {
-    fprintf(stderr, "予期しないトークンを検出しました: '%s'\n", tokens[i].input);
-    exit(1);
+    error("予期しないトークンを検出しました: '%s'\n", tokens[i].input);
+}
+
+// 抽象構文木
+// ノードの型を表す値
+enum {
+    ND_NUM = 256,
+};
+// ノードの型
+typedef struct Node {
+    int type_code;      // 整数かND_NUM
+    struct Node *lhs;   // 左辺
+    struct Node *rhs;   // 右辺
+    int value;          // type_codeがND_NUMの場合にのみ使う
+} Node;
+
+Node* new_node(int type_code, Node *lhs, Node *rhs) {
+    Node *node = malloc(sizeof(Node));
+    node->type_code = type_code;
+    node->lhs = lhs;
+    node->rhs = rhs;
+    return node;
+}
+
+Node* new_node_num(int value) {
+    Node *node = malloc(sizeof(Node));
+    node->type_code = ND_NUM;
+    node->value = value;
+    return node;
+}
+// Parser
+int pos = 0; // Tokenの位置指定に使用
+// プロトタイプ宣言
+Node* expr();
+Node* mul();
+Node* term();
+// bnf
+//  expr    : mul expr'
+//  expr'   : ε | '+' expr | '-' expr
+Node* expr() {
+    Node *lhs = mul();
+    if (tokens[pos].type_code == '+') {
+        pos++;
+        return new_node('+', lhs, expr());
+    }
+    if (tokens[pos].type_code == '-') {
+        pos++;
+        return new_node('-', lhs, expr());
+    }
+    return lhs;
+}
+// bnf
+//  mul : term mul'
+//  mul': ε | '*' term | '/' term
+Node* mul() {
+    Node *lhs = term();
+    if (tokens[pos].type_code == '*') {
+        pos++;
+        return new_node('*', lhs, mul());
+    }
+    if (tokens[pos].type_code == '/') {
+        pos++;
+        return new_node('/', lhs, mul());
+    }
+    return lhs;
+}
+// bnf
+//  term    : number | '(' expr ')'
+Node* term() {
+    if (tokens[pos].type_code == TK_NUM) {
+        Node *num = new_node_num(tokens[pos].value);
+        pos++;
+        return num;
+    }
+    if (tokens[pos].type_code == '(') {
+        pos++;
+        Node *node = expr();
+        if (tokens[pos].type_code != ')') {
+            error("開きカッコに対応する閉じカッコがありません: %s\n", tokens[pos].input);
+        }
+        pos++;
+        return node;
+    }
+    error("数字でも開きカッコでもないトークンです: %s\n", tokens[pos].input);
+}
+
+void gen(Node *node) {
+    if (node->type_code == ND_NUM) {
+        printf("	push %d\n", node->value);
+        return;
+    }
+    gen(node->lhs);
+    gen(node->rhs);
+
+    printf("	pop rdi\n");
+    printf("	pop rax\n");
+
+    switch (node->type_code) {
+        case '+':
+            printf("	add rax, rdi\n");
+            break;
+        case '-':
+            printf("	sub rax, rdi\n");
+            break;
+        case '*':
+            printf("	mul rdi\n");
+            break;
+        case '/':
+            printf("	mov rdx, 0\n");
+            printf("	div rdi\n");
+            break;
+    }
+    printf("	push rax\n");
 }
 
 int main(int argc, char **argv) {
@@ -70,44 +190,19 @@ int main(int argc, char **argv) {
     }
 
     tokenize(argv[1]);
+    Node *rootNode = expr();
 
     printf(".intel_syntax noprefix\n");
     printf(".global main, _main\n");
     printf("\n");
     printf("main:\n");
 
-    // 式の最初は数である必要がある
-    if (tokens[0].type_code != TK_NUM) {
-        token_error(0);
-    }
-    printf("	mov rax, %d\n", tokens[0].value);
+    // 抽象構文木を下りながらコード生成
+    gen(rootNode);
 
-    // `+ <数>`, `- <数>`というトークンの並びを消費してアセンブリ出力
-    int i = 1;
-    while (tokens[i].type_code != TK_EOF) {
-        if (tokens[i].type_code == '+') {
-            i++;
-            if (tokens[i].type_code != TK_NUM) {
-                fprintf(stderr, "Add \n");
-                token_error(i);
-            }
-            printf("	add rax, %d\n", tokens[i].value);
-            i++;
-            continue;
-        }
-
-        if (tokens[i].type_code == '-') {
-            i++;
-            if (tokens[i].type_code != TK_NUM) {
-                token_error(i);
-            }
-            printf("	sub rax, %d\n", tokens[i].value);
-            i++;
-            continue;
-        }
-
-        token_error(i);
-    }
+    // スタックトップに式全体の値があるはずなので
+    // それをraxにロードする
+    printf("	pop rax\n");
 
     printf("	ret\n");
     printf("\n");
