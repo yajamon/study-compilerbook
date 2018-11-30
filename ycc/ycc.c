@@ -80,7 +80,7 @@ typedef struct Node {
     int type_code;      // 整数かND_NUM
     struct Node *lhs;   // 左辺
     struct Node *rhs;   // 右辺
-    int val;            // type_codeがND_NUMの場合にのみ使う
+    int value;          // type_codeがND_NUMの場合にのみ使う
 } Node;
 
 Node* new_node(int type_code, Node *lhs, Node *rhs) {
@@ -91,10 +91,10 @@ Node* new_node(int type_code, Node *lhs, Node *rhs) {
     return node;
 }
 
-Node* new_node_num(int val) {
+Node* new_node_num(int value) {
     Node *node = malloc(sizeof(Node));
     node->type_code = ND_NUM;
-    node->val = val;
+    node->value = value;
     return node;
 }
 
