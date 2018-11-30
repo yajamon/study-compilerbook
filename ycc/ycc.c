@@ -43,7 +43,7 @@ void tokenize(char *p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-' || *p == '*') {
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '(' || *p == ')') {
             tokens[i].type_code = *p;
             tokens[i].input = p;
             i++;
@@ -139,7 +139,16 @@ Node* term() {
         pos++;
         return num;
     }
-    error("数字ではないトークンです: %s\n", tokens[pos].input);
+    if (tokens[pos].type_code == '(') {
+        pos++;
+        Node *node = expr();
+        if (tokens[pos].type_code != ')') {
+            error("開きカッコに対応する閉じカッコがありません: %s\n", tokens[pos].input);
+        }
+        pos++;
+        return node;
+    }
+    error("数字でも開きカッコでもないトークンです: %s\n", tokens[pos].input);
 }
 
 void gen(Node *node) {
