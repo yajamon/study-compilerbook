@@ -154,6 +154,35 @@ Node* term() {
     error("数字でも開きカッコでもないトークンです: %s\n", tokens[pos].input);
 }
 
+void gen(Node *node) {
+    if (node->type_code == ND_NUM) {
+        printf("	push %d\n", node->value);
+        return;
+    }
+    gen(node->lhs);
+    gen(node->rhs);
+
+    printf("	pop rdi\n");
+    printf("	pop rax\n");
+
+    switch (node->type_code) {
+        case '+':
+            printf("	add rax, rdi\n");
+            break;
+        case '-':
+            printf("	sub rax, rdi\n");
+            break;
+        case '*':
+            printf("	mul rdi\n");
+            break;
+        case '/':
+            printf("	mov rdx, 0\n");
+            printf("	div rdi\n");
+            break;
+    }
+    printf("	push rax\n");
+}
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
