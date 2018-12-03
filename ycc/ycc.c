@@ -24,7 +24,7 @@ enum {
 typedef struct {
     int type_code;  // トークンの型を表す値
     int value;      // type_codeがTK_NUMの場合、その数値
-    char *input;    // トークン文字列 (エラーメッセージ)
+    char *input;    // トークン文字列
 } Token;
 
 // トークナイズした結果のトークン列を保存する配列
@@ -111,6 +111,13 @@ Node* new_node_num(int value) {
     node->value = value;
     return node;
 }
+
+Node* new_node_ident(char name) {
+    Node *node = malloc(sizeof(Node));
+    node->type_code = ND_IDENT;
+    node->name = name;
+    return node;
+}
 // Parser
 int pos = 0; // Tokenの位置指定に使用
 // プロトタイプ宣言
@@ -148,12 +155,17 @@ Node* mul() {
     return lhs;
 }
 // bnf
-//  term    : number | '(' expr ')'
+//  term    : number | ident | '(' expr ')'
 Node* term() {
     if (tokens[pos].type_code == TK_NUM) {
         Node *num = new_node_num(tokens[pos].value);
         pos++;
         return num;
+    }
+    if (tokens[pos].type_code == TK_IDENT) {
+        Node *ident = new_node_ident(*(tokens[pos].input));
+        pos++;
+        return ident;
     }
     if (tokens[pos].type_code == '(') {
         pos++;
