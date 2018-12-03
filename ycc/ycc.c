@@ -84,6 +84,7 @@ void token_error(int i) {
 // ノードの型を表す値
 enum {
     ND_NUM = 256,
+    ND_IDENT,
 };
 // ノードの型
 typedef struct Node {
@@ -91,6 +92,7 @@ typedef struct Node {
     struct Node *lhs;   // 左辺
     struct Node *rhs;   // 右辺
     int value;          // type_codeがND_NUMの場合にのみ使う
+    char name;          // type_codeがND_IDENTの場合にのみ使う
 } Node;
 
 Node *code[100] = {NULL};
