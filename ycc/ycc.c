@@ -51,6 +51,7 @@ void tokenize(char *p) {
             case '/':
             case '(':
             case ')':
+            case '=':
                 tokens[i].type_code = *p;
                 tokens[i].input = p;
                 i++;
@@ -129,9 +130,22 @@ Node* new_node_ident(char name) {
 // Parser
 int pos = 0; // Tokenの位置指定に使用
 // プロトタイプ宣言
+Node* assign();
 Node* expr();
 Node* mul();
 Node* term();
+// assign
+// bnf
+//  assign  : expr assign' ";"
+//  assign' : ε | "=" assign'
+Node* assign() {
+    Node *lhs = expr();
+    if (tokens[pos].type_code == '=') {
+        pos++;
+        return new_node('=', lhs, assign());
+    }
+    return lhs;
+}
 // bnf
 //  expr    : mul expr'
 //  expr'   : ε | '+' expr | '-' expr
@@ -223,7 +237,7 @@ int main(int argc, char **argv) {
     }
 
     tokenize(argv[1]);
-    Node *rootNode = expr();
+    Node *rootNode = assign();
 
     printf(".intel_syntax noprefix\n");
     printf(".global main, _main\n");
