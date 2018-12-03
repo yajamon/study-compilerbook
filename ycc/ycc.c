@@ -52,6 +52,7 @@ void tokenize(char *p) {
             case '(':
             case ')':
             case '=':
+            case ';':
                 tokens[i].type_code = *p;
                 tokens[i].input = p;
                 i++;
@@ -129,11 +130,23 @@ Node* new_node_ident(char name) {
 }
 // Parser
 int pos = 0; // Tokenの位置指定に使用
+int codePos = 0; // code[]における位置指定に使用
 // プロトタイプ宣言
+void program();
 Node* assign();
 Node* expr();
 Node* mul();
 Node* term();
+// program
+// bnf
+//  program : assign program'
+//  program': ε | program'
+void program() {
+    while (tokens[pos].type_code != TK_EOF) {
+        code[codePos] = assign();
+        codePos++;
+    }
+}
 // assign
 // bnf
 //  assign  : expr assign' ";"
@@ -144,6 +157,10 @@ Node* assign() {
         pos++;
         return new_node('=', lhs, assign());
     }
+    if (tokens[pos].type_code != ';') {
+        error("文の終わりを示す;がありません: %s\n", tokens[pos].input);
+    }
+    pos++;
     return lhs;
 }
 // bnf
