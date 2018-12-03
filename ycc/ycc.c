@@ -44,12 +44,20 @@ void tokenize(char *p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
-            tokens[i].type_code = *p;
-            tokens[i].input = p;
-            i++;
-            p++;
-            continue;
+        switch (*p) {
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+            case '(':
+            case ')':
+                tokens[i].type_code = *p;
+                tokens[i].input = p;
+                i++;
+                p++;
+                continue;
+            default:
+                break;
         }
 
         if (isdigit(*p)) {
