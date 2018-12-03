@@ -4,6 +4,12 @@
 #include <string.h>
 
 
+// 抽象構文木
+// ノードの型を表す値
+enum {
+    ND_NUM = 256,
+    ND_IDENT,
+};
 // ノードの型
 typedef struct Node {
     int type_code;      // 整数かND_NUM
@@ -14,6 +20,7 @@ typedef struct Node {
 } Node;
 
 // プロトタイプ宣言
+void error(char* format, char* param);
 void tokenize(char *p);
 void program();
 void gen(Node *node);
