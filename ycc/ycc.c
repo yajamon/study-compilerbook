@@ -60,6 +60,14 @@ void tokenize(char *p) {
             continue;
         }
 
+        if ('a' <= *p && *p <= 'z') {
+            tokens[i].type_code = TK_IDENT;
+            tokens[i].input = p;
+            i++;
+            p++;
+            continue;
+        }
+
         error("トークナイズできません: %s\n", p);
     }
 
