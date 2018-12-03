@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
     }
 
     tokenize(argv[1]);
-    Node *rootNode = assign();
+    Node *rootNode = expr();
 
     printf(".intel_syntax noprefix\n");
     printf(".global main, _main\n");
