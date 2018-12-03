@@ -93,6 +93,8 @@ typedef struct Node {
     int value;          // type_codeがND_NUMの場合にのみ使う
 } Node;
 
+Node *code[100] = {NULL};
+
 Node* new_node(int type_code, Node *lhs, Node *rhs) {
     Node *node = malloc(sizeof(Node));
     node->type_code = type_code;
