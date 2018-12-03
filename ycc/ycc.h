@@ -4,6 +4,21 @@
 #include <string.h>
 
 
+// トークンの型を表す値
+enum {
+    TK_NUM = 256,   // 整数トークン
+    TK_IDENT,       // 識別子
+    TK_EOF,         // 入力の終わりを表すトークン
+};
+
+// トークンの型
+typedef struct {
+    int type_code;  // トークンの型を表す値
+    int value;      // type_codeがTK_NUMの場合、その数値
+    char *input;    // トークン文字列
+} Token;
+
+
 // 抽象構文木
 // ノードの型を表す値
 enum {
@@ -26,4 +41,5 @@ void program();
 void gen(Node *node);
 
 // グローバル変数
+extern Token tokens[];
 extern Node *code[];
