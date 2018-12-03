@@ -16,6 +16,7 @@ void error(char* format, char* param) {
 // トークンの型を表す値
 enum {
     TK_NUM = 256,   // 整数トークン
+    TK_IDENT,       // 識別子
     TK_EOF,         // 入力の終わりを表すトークン
 };
 
