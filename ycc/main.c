@@ -1,5 +1,10 @@
 #include "ycc.h"
 
+// トークナイズした結果のトークン列を保存する配列
+// 100個以上のトークンはこないものとする
+Token tokens[100];
+Node *code[100] = {NULL};
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の数が正しくありません\n");
@@ -42,4 +47,14 @@ int main(int argc, char **argv) {
     printf("	ret\n");
 
     return 0;
+}
+
+// エラー報告関数
+void error(char* format, char* param) {
+    if (param != NULL) {
+        fprintf(stderr, format, param);
+    } else {
+        fprintf(stderr, format);
+    }
+    exit(1);
 }
