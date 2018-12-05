@@ -35,7 +35,7 @@ Node* new_node_ident(char name) {
 // program
 // bnf
 //  program : assign program'
-//  program': ε | program'
+//  program': ε | assign program'
 void program() {
     while (tokens[pos].type_code != TK_EOF) {
         code[codePos] = assign();
@@ -45,7 +45,7 @@ void program() {
 // assign
 // bnf
 //  assign  : expr assign' ";"
-//  assign' : ε | "=" assign'
+//  assign' : ε | "=" expr assign'
 Node* assign() {
     Node *lhs = expr();
     if (tokens[pos].type_code == '=') {
