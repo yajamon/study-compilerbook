@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,6 +31,10 @@ Token* tokenize(char* p) {
     Token* current = &head;
 
     while (*p) {
+        if (isspace(*p)) {
+            p++;
+            continue;
+        }
         // 全部無視
         p++;
     }
