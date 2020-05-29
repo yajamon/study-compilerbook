@@ -60,7 +60,7 @@ Token* tokenize(char* p) {
     }
 
     new_token(TK_EOF, current, p);
-    return NULL;
+    return head.next;
 }
 
 int main(int argc, char** argv) {
@@ -70,6 +70,8 @@ int main(int argc, char** argv) {
     }
 
     char *p = argv[1];
+    Token *token;
+    token = tokenize(p);
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
