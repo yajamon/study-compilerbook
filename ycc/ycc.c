@@ -7,11 +7,22 @@ typedef enum {
     TK_EOF,         // 終端
 } TokenKind;
 
+typedef struct Token Token;
+
 struct Token {
     TokenKind kind;
+    Token* next;
     int val;            // kind が TK_NUM の場合、その数値
     char* str;           // Tokenの文字列
 };
+
+Token* new_token(TokenKind kind, Token* current, char* str) {
+    Token* tok = calloc(1, sizeof(Token));
+    tok->kind = kind;
+    tok->str = str;
+    current->next = tok;
+    return tok;
+}
 
 int main(int argc, char const* argv[])
 {
