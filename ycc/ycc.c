@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,6 +17,14 @@ struct Token {
     int val;            // kind が TK_NUM の場合、その数値
     char* str;           // Tokenの文字列
 };
+
+void error(char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
 
 Token* new_token(TokenKind kind, Token* current, char* str) {
     Token* tok = calloc(1, sizeof(Token));
@@ -46,8 +55,8 @@ Token* tokenize(char* p) {
             current->val = strtol(p, &p, 10);
             continue;
         }
-        // 全部無視
-        p++;
+
+        error("トークナイズできません");
     }
 
     new_token(TK_EOF, current, p);
