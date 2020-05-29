@@ -35,6 +35,11 @@ Token* tokenize(char* p) {
             p++;
             continue;
         }
+
+        if (*p == '+' || *p == '-') {
+            current = new_token(TK_RESERVED, current, p);
+            continue;
+        }
         // 全部無視
         p++;
     }
