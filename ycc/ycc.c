@@ -63,8 +63,7 @@ Token* tokenize(char* p) {
     return NULL;
 }
 
-int main(int argc, char const* argv[])
-{
+int main(int argc, char** argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の個数が正しくありません\n");
         return 1;
