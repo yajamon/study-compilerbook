@@ -24,6 +24,20 @@ Token* new_token(TokenKind kind, Token* current, char* str) {
     return tok;
 }
 
+Token* tokenize(char* p) {
+    Token head;
+    head.next = NULL;
+    Token* current = &head;
+
+    while (*p) {
+        // 全部無視
+        p++;
+    }
+
+    new_token(TK_EOF, current, p);
+    return NULL;
+}
+
 int main(int argc, char const* argv[])
 {
     if (argc != 2) {
