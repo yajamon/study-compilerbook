@@ -40,6 +40,12 @@ Token* tokenize(char* p) {
             current = new_token(TK_RESERVED, current, p);
             continue;
         }
+
+        if (isdigit(*p)) {
+            current = new_token(TK_NUM, current, p);
+            current->val = strtol(p, &p, 10);
+            continue;
+        }
         // 全部無視
         p++;
     }
