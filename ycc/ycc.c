@@ -117,12 +117,10 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        if (consume('-')) {
-            printf("    sub rax, %d\n", expect_number());
-            continue;
+        if (!consume('-')) {
+            error("予期しないトークンです");
         }
-
-        error("予期しないトークンです");
+        printf("    sub rax, %d\n", expect_number());
     }
 
     printf("    ret\n");
