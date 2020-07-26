@@ -22,6 +22,23 @@ struct Token {
 // 現在着目しているトークン
 Token *token;
 
+// 入力プログラム
+char *user_input;
+
+// エラー箇所を報告する
+void error_at(char* loc, char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, ""); // pos個の空白を出力
+    fprintf(stderr, "^ ");
+
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
 void error(char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
@@ -110,6 +127,7 @@ int main(int argc, char** argv) {
     }
 
     char *p = argv[1];
+    user_input = p;
     token = tokenize(p);
 
     printf(".intel_syntax noprefix\n");
