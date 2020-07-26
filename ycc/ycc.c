@@ -19,6 +19,23 @@ struct Token {
     char* str;           // Tokenの文字列
 };
 
+// 抽象構文木のノードの種類
+typedef enum {
+    ND_ADD, // 加算
+    ND_SUB, // 減算
+    ND_NUM, // 整数
+} NodeKind;
+
+typedef struct Node Node;
+
+// 抽象構文木のノードの型
+struct Node {
+    NodeKind kind;
+    Node *lhs;      // 左辺
+    Node *rhs;      // 右辺
+    int val;        // kind が ND_NUM の場合、その数値
+};
+
 // 現在着目しているトークン
 Token *token;
 
