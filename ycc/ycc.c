@@ -65,7 +65,7 @@ Token* tokenize(char* p) {
         }
 
         if (*p == '+' || *p == '-') {
-            current = new_token(TK_RESERVED, current, p);
+            current = new_token(TK_RESERVED, current, p++);
             continue;
         }
 
