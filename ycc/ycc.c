@@ -101,20 +101,19 @@ int main(int argc, char** argv) {
     printf("    mov rax, %d\n", expect_number());
 
     while (!at_eof()) {
-        if (*p == '+') {
-            p++;
-            printf("    add rax, %ld\n", strtol(p, &p, 10));
+        if (token->kind == TK_RESERVED && token->str[0] == '+') {
+            token = token->next;
+            printf("    add rax, %d\n", expect_number());
             continue;
         }
 
-        if (*p == '-') {
-            p++;
-            printf("    sub rax, %ld\n", strtol(p, &p, 10));
+        if (token->kind == TK_RESERVED && token->str[0] == '-') {
+            token = token->next;
+            printf("    sub rax, %d\n", expect_number());
             continue;
         }
 
-        fprintf(stderr, "予期しない文字です: '%c'\n", *p);
-        return 1;
+        error("予期しないトークンです");
     }
 
     printf("    ret\n");
