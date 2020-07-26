@@ -30,6 +30,16 @@ void error(char* fmt, ...) {
     exit(1);
 }
 
+// 次のトークンが期待している記号の場合、トークンを1つ読み進めて真を返す。
+// それ以外の場合には偽を返す。
+bool consume(char op) {
+    if (token->kind != TK_RESERVED || token->str[0] != op) {
+        return false;
+    }
+    token = token->next;
+    return true;
+}
+
 // 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
 // それ以外の場合にはエラーを報告する。
 int expect_number() {
@@ -102,14 +112,12 @@ int main(int argc, char** argv) {
     printf("    mov rax, %d\n", expect_number());
 
     while (!at_eof()) {
-        if (token->kind == TK_RESERVED && token->str[0] == '+') {
-            token = token->next;
+        if (consume('+')) {
             printf("    add rax, %d\n", expect_number());
             continue;
         }
 
-        if (token->kind == TK_RESERVED && token->str[0] == '-') {
-            token = token->next;
+        if (consume('-')) {
             printf("    sub rax, %d\n", expect_number());
             continue;
         }
