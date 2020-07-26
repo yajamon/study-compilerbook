@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,12 +19,30 @@ struct Token {
     char* str;           // Tokenの文字列
 };
 
+// 現在着目しているトークン
+Token *token;
+
 void error(char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
+}
+
+// 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
+// それ以外の場合にはエラーを報告する。
+int expect_number() {
+    if (token->kind != TK_NUM) {
+        error("数ではありません");
+    }
+    int val = token->val;
+    token = token->next;
+    return val;
+}
+
+bool at_eof() {
+    return token->kind == TK_EOF;
 }
 
 Token* new_token(TokenKind kind, Token* current, char* str) {
@@ -70,16 +89,18 @@ int main(int argc, char** argv) {
     }
 
     char *p = argv[1];
-    Token *token;
     token = tokenize(p);
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
     printf("\n");
     printf("main:\n");
-    printf("    mov rax, %ld\n", strtol(p, &p, 10));
 
-    while (*p) {
+    // 式の最初は数でなければならない。
+    // それをチェックして最初のmov命令を出力。
+    printf("    mov rax, %d\n", expect_number());
+
+    while (!at_eof()) {
         if (*p == '+') {
             p++;
             printf("    add rax, %ld\n", strtol(p, &p, 10));
