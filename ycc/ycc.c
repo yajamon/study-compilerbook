@@ -42,6 +42,16 @@ bool consume(char op) {
 
 // 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
 // それ以外の場合にはエラーを報告する。
+bool expect(char op) {
+    if (token->kind != TK_RESERVED || token->str[0] != op) {
+        error("'%c'ではありません", op);
+    }
+    token = token->next;
+}
+
+
+// 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
+// それ以外の場合にはエラーを報告する。
 int expect_number() {
     if (token->kind != TK_NUM) {
         error("数ではありません");
@@ -117,9 +127,7 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        if (!consume('-')) {
-            error("予期しないトークンです");
-        }
+        expect('-');
         printf("    sub rax, %d\n", expect_number());
     }
 
