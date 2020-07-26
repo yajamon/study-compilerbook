@@ -60,12 +60,13 @@ Token* tokenize(char* p) {
 
     while (*p) {
         if (isspace(*p)) {
-            p++;
+            p += 1;
             continue;
         }
 
         if (*p == '+' || *p == '-') {
-            current = new_token(TK_RESERVED, current, p++);
+            current = new_token(TK_RESERVED, current, p);
+            p += 1;
             continue;
         }
 
