@@ -39,13 +39,6 @@ void error_at(char* loc, char* fmt, ...) {
     fprintf(stderr, "\n");
     exit(1);
 }
-void error(char* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    fprintf(stderr, "\n");
-    exit(1);
-}
 
 // 次のトークンが期待している記号の場合、トークンを1つ読み進めて真を返す。
 // それ以外の場合には偽を返す。
@@ -61,7 +54,7 @@ bool consume(char op) {
 // それ以外の場合にはエラーを報告する。
 bool expect(char op) {
     if (token->kind != TK_RESERVED || token->str[0] != op) {
-        error("'%c'ではありません", op);
+        error_at(token->str, "'%c'ではありません", op);
     }
     token = token->next;
 }
@@ -71,7 +64,7 @@ bool expect(char op) {
 // それ以外の場合にはエラーを報告する。
 int expect_number() {
     if (token->kind != TK_NUM) {
-        error("数ではありません");
+        error_at(token->str, "数ではありません");
     }
     int val = token->val;
     token = token->next;
@@ -113,7 +106,7 @@ Token* tokenize(char* p) {
             continue;
         }
 
-        error("トークナイズできません");
+        error_at(p, "トークナイズできません");
     }
 
     new_token(TK_EOF, current, p);
