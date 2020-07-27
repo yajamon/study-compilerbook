@@ -23,6 +23,7 @@ struct Token {
 typedef enum {
     ND_ADD, // 加算
     ND_SUB, // 減算
+    ND_MUL, // 乗算
     ND_NUM, // 整数
 } NodeKind;
 
@@ -111,7 +112,7 @@ Token* tokenize(char* p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-') {
+        if (*p == '+' || *p == '-' || *p == '*') {
             current = new_token(TK_RESERVED, current, p);
             p += 1;
             continue;
@@ -154,6 +155,8 @@ Node* expr() {
             node = new_node(ND_ADD, node, expr());
         } else if (consume('-')) {
             node = new_node(ND_SUB, node, expr());
+        } else if (consume('*')) {
+            node = new_node(ND_MUL, node, expr());
         } else {
             return node;
         }
@@ -179,6 +182,8 @@ void gen(Node *node) {
         case ND_SUB:
             printf("    sub rax, rdi\n");
             break;
+        case ND_MUL:
+            printf("    imul rax, rdi\n");
     }
 
     printf("    push rax\n");
