@@ -191,6 +191,13 @@ Node* primary() {
     return new_node_num(expect_number());
 }
 
+void gen(Node *node) {
+    if (node->kind == ND_NUM) {
+        printf("    push %d\n", node->val);
+        return;
+    }
+}
+
 int main(int argc, char** argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の個数が正しくありません\n");
