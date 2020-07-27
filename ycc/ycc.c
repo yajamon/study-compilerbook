@@ -145,6 +145,21 @@ Node* new_node_num(int val) {
     return node;
 }
 
+Node* expr() {
+    // 式は必ず数字から始まるはず
+    Node *node = new_node_num(expect_number());
+
+    for(;;) {
+        if (consume('+')) {
+            node = new_node(ND_ADD, node, expr());
+        } else if (consume('-')) {
+            node = new_node(ND_SUB, node, expr());
+        } else {
+            return node;
+        }
+    }
+}
+
 int main(int argc, char** argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の個数が正しくありません\n");
