@@ -220,7 +220,7 @@ void gen(Node *node) {
 
     }
 
-    printf("    push rax\n");
+    printf("    push rax");
 }
 
 int main(int argc, char** argv) {
@@ -229,20 +229,28 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    user_input = argv[1];
-    token = tokenize(user_input);
-    Node *node = expr();
+    char *p = argv[1];
+    user_input = p;
+    token = tokenize(p);
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
     printf("\n");
     printf("main:\n");
 
-    // 抽象構文木を使ってコード生成
-    gen(node);
+    // 式の最初は数でなければならない。
+    // それをチェックして最初のmov命令を出力。
+    printf("    mov rax, %d\n", expect_number());
 
-    // スタックのトップから値を取り出す。
-    printf("    pop rax\n");
+    while (!at_eof()) {
+        if (consume('+')) {
+            printf("    add rax, %d\n", expect_number());
+            continue;
+        }
+
+        expect('-');
+        printf("    sub rax, %d\n", expect_number());
+    }
 
     printf("    ret\n");
     return 0;
