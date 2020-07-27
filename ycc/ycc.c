@@ -25,6 +25,7 @@ typedef enum {
     ND_SUB, // 減算
     ND_MUL, // 乗算
     ND_NUM, // 整数
+    ND_DIV, // 除算
 } NodeKind;
 
 typedef struct Node Node;
@@ -112,7 +113,7 @@ Token* tokenize(char* p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-' || *p == '*' || *p == '(' || *p == ')') {
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
             current = new_token(TK_RESERVED, current, p);
             p += 1;
             continue;
@@ -170,6 +171,8 @@ Node* mul() {
     for(;;) {
         if (consume('*')) {
             node = new_node(ND_MUL, node, primary());
+        } else if (consume('/')) {
+            node = new_node(ND_DIV, node, primary());
         } else {
             return node;
         }
@@ -208,6 +211,11 @@ void gen(Node *node) {
             break;
         case ND_MUL:
             printf("    imul rax, rdi\n");
+            break;
+        case ND_DIV:
+            printf("    cqo\n");
+            printf("    idiv rax, rdi\n");
+            break;
     }
 
     printf("    push rax\n");
