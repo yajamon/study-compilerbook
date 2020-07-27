@@ -190,9 +190,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    char *p = argv[1];
-    user_input = p;
-    token = tokenize(p);
+    user_input = argv[1];
+    token = tokenize(user_input);
     Node *node = expr();
 
     printf(".intel_syntax noprefix\n");
@@ -201,7 +200,6 @@ int main(int argc, char** argv) {
     printf("main:\n");
 
     gen(node);
-
 
     printf("    pop rax\n");
     printf("    ret\n");
