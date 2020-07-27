@@ -147,6 +147,10 @@ Node* new_node_num(int val) {
     return node;
 }
 
+Node *expr();
+Node *mul();
+Node *primary();
+
 int main(int argc, char** argv) {
     if (argc != 2) {
         fprintf(stderr, "引数の個数が正しくありません\n");
