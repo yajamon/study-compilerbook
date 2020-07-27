@@ -229,9 +229,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    char *p = argv[1];
-    user_input = p;
-    token = tokenize(p);
+    user_input = argv[1];
+    token = tokenize(user_input);
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
