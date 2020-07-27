@@ -179,6 +179,17 @@ Node* mul() {
     }
 }
 
+Node* primary() {
+    // 次のトークンが '(' なら、 "'(' expr ')'" のはず
+    if (consume('(')) {
+        Node *node = expr();
+        expect(')');
+        return node;
+    }
+
+    // さもなければ数値のはず
+    return new_node_num(expect_number());
+}
 
 int main(int argc, char** argv) {
     if (argc != 2) {
