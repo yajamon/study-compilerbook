@@ -220,7 +220,7 @@ void gen(Node *node) {
 
     }
 
-    printf("    push rax");
+    printf("    push rax\n");
 }
 
 int main(int argc, char** argv) {
