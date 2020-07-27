@@ -112,7 +112,7 @@ Token* tokenize(char* p) {
             continue;
         }
 
-        if (*p == '+' || *p == '-' || *p == '*') {
+        if (*p == '+' || *p == '-' || *p == '*' || *p == '(' || *p == ')') {
             current = new_token(TK_RESERVED, current, p);
             p += 1;
             continue;
@@ -148,6 +148,7 @@ Node* new_node_num(int val) {
 
 Node* expr();
 Node* mul();
+Node* primary();
 
 Node* expr() {
     Node *node = mul();
@@ -164,16 +165,26 @@ Node* expr() {
 }
 
 Node* mul() {
-    // 式は必ず数字から始まるはず
-    Node *node = new_node_num(expect_number());
+    Node *node = primary();
 
     for(;;) {
         if (consume('*')) {
-            node = new_node(ND_MUL, node, mul());
+            node = new_node(ND_MUL, node, primary());
         } else {
             return node;
         }
     }
+}
+
+Node* primary() {
+    // "("があれば中に式があるはず
+    if (consume('(')) {
+        Node *node = expr();
+        expect(')');
+        return node;
+    }
+    // さもなければ数値のはず
+    return new_node_num(expect_number());
 }
 
 void gen(Node *node) {
