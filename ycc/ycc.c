@@ -213,6 +213,11 @@ void gen(Node *node) {
         case ND_MUL:
             printf("    imul rax, rdi\n");
             break;
+        case ND_DIV:
+            printf("    cqo\n");
+            printf("    idiv rax, rdi\n");
+            break;
+
     }
 
     printf("    push rax");
