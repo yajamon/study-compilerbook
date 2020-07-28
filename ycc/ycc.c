@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum {
   TK_RESERVED, // 記号
@@ -62,8 +63,10 @@ void error_at(char *loc, char *fmt, ...) {
 
 // 次のトークンが期待している記号の場合、トークンを1つ読み進めて真を返す。
 // それ以外の場合には偽を返す。
-bool consume(char op) {
-  if (token->kind != TK_RESERVED || token->str[0] != op) {
+bool consume(char *op) {
+  if (token->kind != TK_RESERVED || token->len != strlen(op) ||
+      memcmp(token->str, op, token->len) != 0) {
+
     return false;
   }
   token = token->next;
@@ -72,8 +75,9 @@ bool consume(char op) {
 
 // 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
 // それ以外の場合にはエラーを報告する。
-bool expect(char op) {
-  if (token->kind != TK_RESERVED || token->str[0] != op) {
+bool expect(char *op) {
+  if (token->kind != TK_RESERVED || token->len != strlen(op) ||
+      memcmp(token->str, op, token->len) != 0) {
     error_at(token->str, "'%c'ではありません", op);
   }
   token = token->next;
@@ -159,9 +163,9 @@ Node *expr() {
   Node *node = mul();
 
   for (;;) {
-    if (consume('+')) {
+    if (consume("+")) {
       node = new_node(ND_ADD, node, mul());
-    } else if (consume('-')) {
+    } else if (consume("-")) {
       node = new_node(ND_SUB, node, mul());
     } else {
       return node;
@@ -173,9 +177,9 @@ Node *mul() {
   Node *node = unary();
 
   for (;;) {
-    if (consume('*')) {
+    if (consume("*")) {
       node = new_node(ND_MUL, node, unary());
-    } else if (consume('/')) {
+    } else if (consume("/")) {
       node = new_node(ND_DIV, node, unary());
     } else {
       return node;
@@ -184,10 +188,10 @@ Node *mul() {
 }
 
 Node *unary() {
-  if (consume('+')) {
+  if (consume("+")) {
     return primary();
   }
-  if (consume('-')) {
+  if (consume("-")) {
     return new_node(ND_SUB, new_node_num(0), primary());
   }
 
@@ -196,9 +200,9 @@ Node *unary() {
 
 Node *primary() {
   // "("があれば中に式があるはず
-  if (consume('(')) {
+  if (consume("(")) {
     Node *node = expr();
-    expect(')');
+    expect(")");
     return node;
   }
   // さもなければ数値のはず
