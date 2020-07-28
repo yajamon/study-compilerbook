@@ -30,5 +30,6 @@ assert 6 '2 * +3'
 assert 3 '-2 + 5'
 assert 20 '30 + (4 - 2) * -5'
 assert 1 '2 == 2'
+assert 0 '2 == 3'
 
 echo OK
