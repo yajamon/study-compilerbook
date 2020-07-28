@@ -17,6 +17,7 @@ struct Token {
   Token *next;
   int val;   // kind が TK_NUM の場合、その数値
   char *str; // Tokenの文字列
+  int len;   // Tokenの長さ
 };
 
 // 抽象構文木のノードの種類
@@ -91,10 +92,11 @@ int expect_number() {
 
 bool at_eof() { return token->kind == TK_EOF; }
 
-Token *new_token(TokenKind kind, Token *current, char *str) {
+Token *new_token(TokenKind kind, Token *current, char *str, int len) {
   Token *tok = calloc(1, sizeof(Token));
   tok->kind = kind;
   tok->str = str;
+  tok->len = len;
   current->next = tok;
   return tok;
 }
@@ -112,21 +114,24 @@ Token *tokenize(char *p) {
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
         *p == ')') {
-      current = new_token(TK_RESERVED, current, p);
+      current = new_token(TK_RESERVED, current, p, 1);
       p += 1;
       continue;
     }
 
     if (isdigit(*p)) {
-      current = new_token(TK_NUM, current, p);
+      current = new_token(TK_NUM, current, p, 0);
+      char *q = p;
       current->val = strtol(p, &p, 10);
+      // ポインタが進行したので、アドレスから長さを算出できる
+      current->len = p - q;
       continue;
     }
 
     error_at(p, "トークナイズできません");
   }
 
-  new_token(TK_EOF, current, p);
+  new_token(TK_EOF, current, p, 0);
   return head.next;
 }
 
