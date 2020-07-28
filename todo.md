@@ -1,7 +1,7 @@
 # Implement Compiler Todo
 
 - [ ] 比較演算子を実装する
-    - [ ] <
+    - [x] <
     - [ ] <=
     - [ ] >
     - [ ] >=

@@ -30,6 +30,7 @@ typedef enum {
   ND_DIV, // 除算
   ND_EQ,  // ==
   ND_NE,  // !=
+  ND_LT,  // <
 } NodeKind;
 
 typedef struct Node Node;
@@ -129,7 +130,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()", *p)) {
+    if (strchr("+-*/()<", *p)) {
       current = new_token(TK_RESERVED, current, p, 1);
       p += 1;
       continue;
@@ -168,6 +169,7 @@ Node *new_node_num(int val) {
 
 Node *expr();
 Node *equality();
+Node *relational();
 Node *add();
 Node *mul();
 Node *unary();
@@ -176,13 +178,25 @@ Node *primary();
 Node *expr() { return equality(); }
 
 Node *equality() {
-  Node *node = add();
+  Node *node = relational();
 
   for (;;) {
     if (consume("==")) {
-      node = new_node(ND_EQ, node, add());
+      node = new_node(ND_EQ, node, relational());
     } else if (consume("!=")) {
-      node = new_node(ND_NE, node, add());
+      node = new_node(ND_NE, node, relational());
+    } else {
+      return node;
+    }
+  }
+}
+
+Node *relational() {
+  Node *node = add();
+
+  for (;;) {
+    if (consume("<")) {
+      node = new_node(ND_LT, node, add());
     } else {
       return node;
     }
@@ -273,6 +287,11 @@ void gen(Node *node) {
   case ND_NE:
     printf("    cmp rax, rdi\n");
     printf("    setne al\n");
+    printf("    movzb rax, al\n");
+    break;
+  case ND_LT:
+    printf("    cmp rax, rdi\n");
+    printf("    setl al\n");
     printf("    movzb rax, al\n");
     break;
   }
