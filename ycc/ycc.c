@@ -29,6 +29,7 @@ typedef enum {
   ND_NUM, // 整数
   ND_DIV, // 除算
   ND_EQ,  // ==
+  ND_NE,  // !=
 } NodeKind;
 
 typedef struct Node Node;
@@ -118,7 +119,7 @@ Token *tokenize(char *p) {
     }
 
     // 複数文字の演算子
-    if (memcmp(p, "==", 2) == 0) {
+    if (memcmp(p, "==", 2) == 0 || memcmp(p, "!=", 2) == 0) {
       current = new_token(TK_RESERVED, current, p, 2);
       p += 2;
       continue;
@@ -174,6 +175,8 @@ Node *expr() {
   for (;;) {
     if (consume("==")) {
       node = new_node(ND_EQ, node, add());
+    } else if (consume("!=")) {
+      node = new_node(ND_NE, node, add());
     } else {
       return node;
     }
@@ -259,6 +262,11 @@ void gen(Node *node) {
   case ND_EQ:
     printf("    cmp rax, rdi\n");
     printf("    sete al\n");
+    printf("    movzb rax, al\n");
+    break;
+  case ND_NE:
+    printf("    cmp rax, rdi\n");
+    printf("    setne al\n");
     printf("    movzb rax, al\n");
     break;
   }
