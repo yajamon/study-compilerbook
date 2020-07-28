@@ -125,13 +125,14 @@ Token *tokenize(char *p) {
     }
 
     // 複数文字の演算子
-    if (has_prefix(p, "==") || has_prefix(p, "!=") || has_prefix(p, "<=")) {
+    if (has_prefix(p, "==") || has_prefix(p, "!=") || has_prefix(p, "<=") ||
+        has_prefix(p, ">=")) {
       current = new_token(TK_RESERVED, current, p, 2);
       p += 2;
       continue;
     }
 
-    if (strchr("+-*/()<", *p)) {
+    if (strchr("+-*/()<>", *p)) {
       current = new_token(TK_RESERVED, current, p, 1);
       p += 1;
       continue;
@@ -200,6 +201,10 @@ Node *relational() {
       node = new_node(ND_LT, node, add());
     } else if (consume("<=")) {
       node = new_node(ND_LE, node, add());
+    } else if (consume(">")) {
+      node = new_node(ND_LT, add(), node);
+    } else if (consume(">=")) {
+      node = new_node(ND_LE, add(), node);
     } else {
       return node;
     }
