@@ -167,12 +167,15 @@ Node *new_node_num(int val) {
 }
 
 Node *expr();
+Node *equality();
 Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
 
-Node *expr() {
+Node *expr() { return equality(); }
+
+Node *equality() {
   Node *node = add();
 
   for (;;) {
