@@ -107,7 +107,7 @@ Token *new_token(TokenKind kind, Token *current, char *str, int len) {
   return tok;
 }
 
-bool matchStart(const char *str, const char *prefix) {
+bool has_prefix(const char *str, const char *prefix) {
   return memcmp(str, prefix, strlen(prefix)) == 0;
 }
 
@@ -123,7 +123,7 @@ Token *tokenize(char *p) {
     }
 
     // 複数文字の演算子
-    if (matchStart(p, "==") || matchStart(p, "!=")) {
+    if (has_prefix(p, "==") || has_prefix(p, "!=")) {
       current = new_token(TK_RESERVED, current, p, 2);
       p += 2;
       continue;
