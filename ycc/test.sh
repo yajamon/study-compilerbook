@@ -40,5 +40,6 @@ assert 1 '2 != 3'
 assert 1 '2 < 3'
 assert 0 '3 < 3'
 assert 0 '4 < 3'
+assert 1 '2 <= 3'
 
 echo OK
