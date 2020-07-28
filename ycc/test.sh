@@ -44,4 +44,11 @@ assert 1 '2 <= 3'
 assert 1 '3 <= 3'
 assert 0 '4 <= 3'
 
+assert 1 '3 > 2'
+assert 0 '3 > 3'
+assert 0 '3 > 4'
+assert 1 '3 >= 2'
+assert 1 '3 >= 3'
+assert 0 '3 >= 4'
+
 echo OK
