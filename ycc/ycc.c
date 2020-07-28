@@ -123,7 +123,7 @@ Token *tokenize(char *p) {
     }
 
     // 複数文字の演算子
-    if (memcmp(p, "==", 2) == 0 || memcmp(p, "!=", 2) == 0) {
+    if (matchStart(p, "==") || matchStart(p, "!=")) {
       current = new_token(TK_RESERVED, current, p, 2);
       p += 2;
       continue;
