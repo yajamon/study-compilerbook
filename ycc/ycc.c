@@ -116,6 +116,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // 複数文字の演算子
+    if (memcmp(p, "==", 2) == 0) {
+      current = new_token(TK_RESERVED, current, p, 2);
+      p += 2;
+      continue;
+    }
+
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
         *p == ')') {
       current = new_token(TK_RESERVED, current, p, 1);
