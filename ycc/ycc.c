@@ -79,7 +79,7 @@ bool consume(char *op) {
 
 // 次のトークンが数値の場合、トークンを1つ読み進めてその数値を返す。
 // それ以外の場合にはエラーを報告する。
-bool expect(char *op) {
+void expect(char *op) {
   if (token->kind != TK_RESERVED || token->len != strlen(op) ||
       memcmp(token->str, op, token->len) != 0) {
     error_at(token->str, "'%c'ではありません", op);
