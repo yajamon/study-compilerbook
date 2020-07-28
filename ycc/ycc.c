@@ -129,8 +129,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
-        *p == ')') {
+    if (strchr("+-*/()", *p)) {
       current = new_token(TK_RESERVED, current, p, 1);
       p += 1;
       continue;
