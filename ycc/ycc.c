@@ -31,6 +31,7 @@ typedef enum {
   ND_EQ,  // ==
   ND_NE,  // !=
   ND_LT,  // <
+  ND_LE,  // <=
 } NodeKind;
 
 typedef struct Node Node;
@@ -124,7 +125,7 @@ Token *tokenize(char *p) {
     }
 
     // 複数文字の演算子
-    if (has_prefix(p, "==") || has_prefix(p, "!=")) {
+    if (has_prefix(p, "==") || has_prefix(p, "!=") || has_prefix(p, "<=")) {
       current = new_token(TK_RESERVED, current, p, 2);
       p += 2;
       continue;
@@ -197,6 +198,8 @@ Node *relational() {
   for (;;) {
     if (consume("<")) {
       node = new_node(ND_LT, node, add());
+    } else if (consume("<=")) {
+      node = new_node(ND_LE, node, add());
     } else {
       return node;
     }
@@ -290,6 +293,11 @@ void gen(Node *node) {
     printf("    movzb rax, al\n");
     break;
   case ND_LT:
+    printf("    cmp rax, rdi\n");
+    printf("    setl al\n");
+    printf("    movzb rax, al\n");
+    break;
+  case ND_LE:
     printf("    cmp rax, rdi\n");
     printf("    setl al\n");
     printf("    movzb rax, al\n");
