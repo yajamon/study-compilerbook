@@ -107,6 +107,10 @@ Token *new_token(TokenKind kind, Token *current, char *str, int len) {
   return tok;
 }
 
+bool matchStart(const char *str, const char *prefix) {
+  return memcmp(str, prefix, strlen(prefix)) == 0;
+}
+
 Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
