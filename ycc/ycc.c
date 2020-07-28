@@ -28,6 +28,7 @@ typedef enum {
   ND_MUL, // 乗算
   ND_NUM, // 整数
   ND_DIV, // 除算
+  ND_EQ,  // ==
 } NodeKind;
 
 typedef struct Node Node;
@@ -162,11 +163,24 @@ Node *new_node_num(int val) {
 }
 
 Node *expr();
+Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
 
 Node *expr() {
+  Node *node = add();
+
+  for (;;) {
+    if (consume("==")) {
+      node = new_node(ND_EQ, node, add());
+    } else {
+      return node;
+    }
+  }
+}
+
+Node *add() {
   Node *node = mul();
 
   for (;;) {
